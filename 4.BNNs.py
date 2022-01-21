@@ -1360,4 +1360,5 @@ if __name__ == "__main__":
     latex_table = df_out[cols_to_print].to_latex(
         buf=f"{path_dump}/DES5year_PIa_table.tex", index=False
     )
+    df_out[cols_to_print].to_csv(f"{path_dump}/DES5year_PIa_table.csv", index=False)
 
