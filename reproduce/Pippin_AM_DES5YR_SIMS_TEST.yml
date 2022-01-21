@@ -1,0 +1,63 @@
+SIM:
+  5XDES:
+    IA_G10:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_ia/sn_ia_salt2_g10_des5yr_x1.input
+      DNDZ: POWERLAW 2.27E-5 1.7 ##Frohmaier 2018
+      GENMODEL:  SALT2.P18_UV2IR
+      GENMODEL_EXTRAP_LATETIME: $LSST_ROOT/PLASTICC/model_libs/SNIa_Extrap_LateTime_2expon.TEXT
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_Sullivan2006_x1.HOSTLIB
+    PECIAX:
+      BASE: $DES_ROOT/analysis_photoIa_5yr/base/des/sims_cc/sn_iax_dust.input
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_Iax_Sullivan2006.HOSTLIB
+    PECIA91BG:
+      BASE: $DES_ROOT/analysis_photoIa_5yr/base/des/sims_cc/sn_ia91bg.input
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_91bg_Sullivan2006.HOSTLIB
+    II_TEMPLATES:
+      BASE: $DES_ROOT/analysis_photoIa_5yr/base/des/sims_cc/sn_ii_maria_li_revised.input
+      DNDZ: MD14 5.6E-05
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_Mass_TypeII.HOSTLIB
+    Ibc_TEMPLATES:
+      BASE: $DES_ROOT/analysis_photoIa_5yr/base/des/sims_cc/sn_ibc_maria_li_revised.input
+      DNDZ: MD14 2.4E-05
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_Mass_TypeSE.HOSTLIB
+    GLOBAL:
+      NGEN_UNIT: 5
+      RANSEED_REPEAT: 30 145
+      HOSTLIB_MSKOPT: 258  # 2=Poisson noise
+      HOSTLIB_FILE: $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/DES_SVA2+LOGMASS_LOGSFR_Sullivan10.HOSTLIB
+      SEARCHEFF_zHOST_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/MV_HOSTeff_perField_perYear_obsgr.dat
+      BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 80
+LCFIT:
+  T:
+   BASE: surveys/des/lcfit_nml/des_5yr.nml
+   MASK: DES
+   SNLCINP:
+     ROOTFILE_OUT: 'test.root'
+     USE_MINOS: F
+   FITINP:
+     PRIOR_MJDSIG: 20
+     PRIOR_SHAPE_RANGE: -4.0, 4.0
+     FITWIN_SHAPE: -4.0, +4.0
+     FITWIN_COLOR: -0.4, +0.4
+     FITWIN_PROB:  0.0,  1.01
+     FITWIN_TREST:  -15.0, 45.0
+   OPTS:
+     APPEND_TABLE_VARLIST: m0obs_r m0obs_i m0obs_g m0obs_z em0obs_i em0obs_r em0obs_g em0obs_z
+     BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2a.TEMPLATE 80 # 2a broadwl-lc max 100 jobs,  2b (default) max 500
+  JLA:
+    BASE: surveys/des/lcfit_nml/des_5yr.nml
+    MASK: DES
+    SNLCINP:
+      ROOTFILE_OUT: 'test.root'
+      USE_MINOS: F
+    FITINP:
+      FITMODEL_NAME: 'SALT2.JLA-B14'
+      PRIOR_MJDSIG: 20
+      PRIOR_SHAPE_RANGE: -4.0, 4.0
+      FITWIN_SHAPE: -4.0, +4.0
+      FITWIN_COLOR: -0.4, +0.4
+      FITWIN_PROB:  0.0,  1.01
+      FITWIN_TREST:  -15.0, 45.0
+    OPTS:
+      APPEND_TABLE_VARLIST: m0obs_r m0obs_i m0obs_g m0obs_z em0obs_i em0obs_r em0obs_g em0obs_z
+      BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2a.TEMPLATE 80 # 2a broadwl-lc max 100 jobs,  2b (default) max 500

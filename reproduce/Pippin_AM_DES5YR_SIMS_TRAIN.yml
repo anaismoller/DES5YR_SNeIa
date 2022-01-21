@@ -1,0 +1,218 @@
+SIM:
+  14XDES:
+    IA_G10:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_ia/sn_ia_salt2_g10_des5yr.input
+      DNDZ: POWERLAW 2.27E-5 1.7 ##Frohmaier 2018
+      GENMODEL:  SALT2.P18_UV2IR
+      GENPEAK_SALT2ALPHA:   0.146
+      GENPEAK_SALT2BETA:   3.03
+      GENMODEL_EXTRAP_LATETIME: $LSST_ROOT/PLASTICC/model_libs/SNIa_Extrap_LateTime_2expon.TEXT
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_Sullivan2006_x1.HOSTLIB
+    PECIAX:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc/sn_iax_CorrR14.input
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_Iax_Sullivan2006.HOSTLIB
+    PECIA91BG:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc/sn_ia91bg_stretchCorr.input
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_91bg_Sullivan2006.HOSTLIB
+    II_TEMPLATES:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc_revised_maria/sn_ii_v19_li11revised_nodust.input
+      DNDZ: MD14 5.6E-05
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_Mass_TypeII.HOSTLIB
+    Ibc_TEMPLATES:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc_revised_maria/sn_ibc_v19_li11revised_nodust.input
+      DNDZ: MD14 2.4E-05
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_Mass_TypeSE.HOSTLIB
+    GLOBAL:
+      NGEN_UNIT: 14
+      RANSEED_REPEAT: 30 145
+      HOSTLIB_MSKOPT: 258  # 2=Poisson noise
+      HOSTLIB_FILE: $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/DES_SVA2+LOGMASS_LOGSFR_Sullivan10.HOSTLIB
+      SEARCHEFF_zHOST_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/MV_HOSTeff_perField_perYear_obsgr.dat
+      BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2a.TEMPLATE 80
+
+  14XDES_J17:
+    IA_G10:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_ia/sn_ia_salt2_g10_des5yr.input
+      DNDZ: POWERLAW 2.27E-5 1.7 ##Frohmaier 2018
+      GENMODEL:  SALT2.P18_UV2IR
+      GENPEAK_SALT2ALPHA:   0.146
+      GENPEAK_SALT2BETA:   3.03
+      GENMODEL_EXTRAP_LATETIME: $LSST_ROOT/PLASTICC/model_libs/SNIa_Extrap_LateTime_2expon.TEXT
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_Sullivan2006_x1.HOSTLIB
+    PECIAX:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc/sn_iax_CorrR14.input
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_Iax_Sullivan2006.HOSTLIB
+    PECIA91BG:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc/sn_ia91bg_stretchCorr.input
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_91bg_Sullivan2006.HOSTLIB
+    II_TEMPLATES:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc/sn_ii_jones.input
+      DNDZ: MD14 5.6E-05
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_Mass_TypeII.HOSTLIB
+    Ibc_TEMPLATES:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc/sn_ibc_jones.input
+      DNDZ: MD14 2.4E-05
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_Mass_TypeSE.HOSTLIB
+    GLOBAL:
+      NGEN_UNIT: 14
+      RANSEED_REPEAT: 30 145
+      HOSTLIB_MSKOPT: 258  # 2=Poisson noise
+      HOSTLIB_FILE: $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/DES_SVA2+LOGMASS_LOGSFR_Sullivan10.HOSTLIB
+      SEARCHEFF_zHOST_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/MV_HOSTeff_perField_perYear_obsgr.dat
+      BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2a.TEMPLATE 80
+
+  14XDES_NOPEC:
+    IA_G10:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_ia/sn_ia_salt2_g10_des5yr.input
+      DNDZ: POWERLAW 2.27E-5 1.7 ##Frohmaier 2018
+      GENMODEL:  SALT2.P18_UV2IR
+      GENPEAK_SALT2ALPHA:   0.146
+      GENPEAK_SALT2BETA:   3.03
+      GENMODEL_EXTRAP_LATETIME: $LSST_ROOT/PLASTICC/model_libs/SNIa_Extrap_LateTime_2expon.TEXT
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_Sullivan2006_x1.HOSTLIB
+    II_TEMPLATES:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc_revised_maria/sn_ii_v19_li11revised_nodust.input
+      DNDZ: MD14 5.6E-05
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_Mass_TypeII.HOSTLIB
+    Ibc_TEMPLATES:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc_revised_maria/sn_ibc_v19_li11revised_nodust.input
+      DNDZ: MD14 2.4E-05
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_Mass_TypeSE.HOSTLIB
+    GLOBAL:
+      NGEN_UNIT: 14
+      RANSEED_REPEAT: 30 145
+      HOSTLIB_MSKOPT: 258  # 2=Poisson noise
+      HOSTLIB_FILE: $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/DES_SVA2+LOGMASS_LOGSFR_Sullivan10.HOSTLIB
+      SEARCHEFF_zHOST_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/MV_HOSTeff_perField_perYear_obsgr.dat
+      BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2a.TEMPLATE 80
+
+  14XDES_OLDIA:
+      IA_G10:
+        BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_ia/sn_ia_salt2_g10_des5yr.input
+        DNDZ: POWERLAW 2.27E-5 1.7 ##Frohmaier 2018
+        GENMODEL:  SALT2.JLA-B14
+        GENPEAK_SALT2ALPHA:   0.146
+        GENPEAK_SALT2BETA:   3.03
+        # already has the palsticc extension
+        GENMODEL_EXTRAP_LATETIME: $LSST_ROOT/PLASTICC/model_libs/SNIa_Extrap_LateTime_2expon.TEXT
+        HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_Sullivan2006_x1.HOSTLIB
+      PECIAX:
+        BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc/sn_iax_CorrR14.input
+        HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_Iax_Sullivan2006.HOSTLIB
+      PECIA91BG:
+        BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc/sn_ia91bg_stretchCorr.input
+        HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_91bg_Sullivan2006.HOSTLIB
+      II_TEMPLATES:
+        BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc_revised_maria/sn_ii_v19_li11revised_nodust.input
+        DNDZ: MD14 5.6E-05
+        HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_Mass_TypeII.HOSTLIB
+      Ibc_TEMPLATES:
+        BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc_revised_maria/sn_ibc_v19_li11revised_nodust.input
+        DNDZ: MD14 2.4E-05
+        HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_Mass_TypeSE.HOSTLIB
+      GLOBAL:
+        NGEN_UNIT: 14
+        RANSEED_REPEAT: 30 145
+        HOSTLIB_MSKOPT: 258  # 2=Poisson noise
+        HOSTLIB_FILE: $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/DES_SVA2+LOGMASS_LOGSFR_Sullivan10.HOSTLIB
+        SEARCHEFF_zHOST_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/MV_HOSTeff_perField_perYear_obsgr.dat
+        BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2a.TEMPLATE 80
+
+  14XDES_PSNID:
+      IA_G10:
+        BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_ia/sn_ia_salt2_g10_des5yr.input
+        DNDZ: POWERLAW 2.6E-5 2.2
+        GENMODEL:   SALT2.JLA-B14
+        GENPEAK_SALT2ALPHA:   0.144
+        GENPEAK_SALT2BETA:   3.1
+        HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_Sullivan2006_x1.HOSTLIB
+      CC_TEMPLATES:
+        BASE: $DES_USERS/amoller/SIMGEN_INCLUDE_NON1A_PSNID.INPUT
+        DNDZ: POWERLAW 7.8E-5 2.2 # triple power law to increase lcs NOT PHYSICAL 2.6E-5 2.2
+      GLOBAL:
+        NGEN_UNIT: 14
+        RANSEED_REPEAT: 30 145
+        HOSTLIB_MSKOPT: 258  # 2=Poisson noise
+        HOSTLIB_FILE: $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/DES_SVA2+LOGMASS_LOGSFR_Sullivan10.HOSTLIB
+        SEARCHEFF_zHOST_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/MV_HOSTeff_perField_perYear_obsgr.dat
+        BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2a.TEMPLATE 80
+
+  28XDES:
+    IA_G10:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_ia/sn_ia_salt2_g10_des5yr.input
+      DNDZ: POWERLAW 2.27E-5 1.7 ##Frohmaier 2018
+      GENMODEL:  SALT2.P18_UV2IR
+      GENPEAK_SALT2ALPHA:   0.146
+      GENPEAK_SALT2BETA:   3.03
+      GENMODEL_EXTRAP_LATETIME: $LSST_ROOT/PLASTICC/model_libs/SNIa_Extrap_LateTime_2expon.TEXT
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_Sullivan2006_x1.HOSTLIB
+    PECIAX:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc/sn_iax_CorrR14.input
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_Iax_Sullivan2006.HOSTLIB
+    PECIA91BG:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc/sn_ia91bg_stretchCorr.input
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_91bg_Sullivan2006.HOSTLIB
+    II_TEMPLATES:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc_revised_maria/sn_ii_v19_li11revised_nodust.input
+      DNDZ: MD14 5.6E-05
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_Mass_TypeII.HOSTLIB
+    Ibc_TEMPLATES:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc_revised_maria/sn_ibc_v19_li11revised_nodust.input
+      DNDZ: MD14 2.4E-05
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_Mass_TypeSE.HOSTLIB
+    GLOBAL:
+      NGEN_UNIT: 28
+      RANSEED_REPEAT: 30 145
+      HOSTLIB_MSKOPT: 258  # 2=Poisson noise
+      HOSTLIB_FILE: $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/DES_SVA2+LOGMASS_LOGSFR_Sullivan10.HOSTLIB
+      SEARCHEFF_zHOST_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/MV_HOSTeff_perField_perYear_obsgr.dat
+      BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2a.TEMPLATE 80
+
+  26XBOOSTEDDES: # cheat: boosting CC+pec and less NGEN_UNIT
+    IA_G10:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_ia/sn_ia_salt2_g10_des5yr.input
+      DNDZ: POWERLAW 2.27E-5 1.7 ##Frohmaier 2018
+      GENMODEL:  SALT2.P18_UV2IR
+      GENPEAK_SALT2ALPHA:   0.146
+      GENPEAK_SALT2BETA:   3.03
+      GENMODEL_EXTRAP_LATETIME: $LSST_ROOT/PLASTICC/model_libs/SNIa_Extrap_LateTime_2expon.TEXT
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_Sullivan2006_x1.HOSTLIB
+    PECIAX:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc/sn_iax_CorrR14.input
+      DNDZ: MD14  6.0E-6 # 6.0E-6
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_Iax_Sullivan2006.HOSTLIB
+    PECIA91BG:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc/sn_ia91bg_stretchCorr.input
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_MassSFR_91bg_Sullivan2006.HOSTLIB
+    II_TEMPLATES:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc_revised_maria/sn_ii_v19_li11revised_nodust.input
+      DNDZ: MD14 5.6E-05
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_Mass_TypeII.HOSTLIB
+    Ibc_TEMPLATES:
+      BASE: $DES_USERS/mvincenzi/MYPIPPIN/sims_cc_revised_maria/sn_ibc_v19_li11revised_nodust.input
+      DNDZ: MD14 2.4E-05
+      HOSTLIB_WGTMAP_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/WGT_maps_DESX3/DES_WGTMAP_Mass_TypeSE.HOSTLIB
+    GLOBAL:
+      NGEN_UNIT: 26
+      DNDZ_SCALE: 1 1.4 # AM Scale Ia vs non Ia for more balance
+      RANSEED_REPEAT: 30 145
+      HOSTLIB_MSKOPT: 258  # 2=Poisson noise
+      HOSTLIB_FILE: $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/DES_SVA2+LOGMASS_LOGSFR_Sullivan10.HOSTLIB
+      SEARCHEFF_zHOST_FILE:  $DES_USERS/mvincenzi/MYPIPPIN/sims_instrument/MV_HOSTeff_perField_perYear_obsgr.dat
+      BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2a.TEMPLATE 80
+
+LCFIT: 
+  T:
+    BASE: surveys/des/lcfit_nml/des_5yr.nml
+    MASK: 26XBOOS #DES
+    SNLCINP:
+      USE_MINOS: F
+    FITINP:
+      PRIOR_MJDSIG: 20
+      PRIOR_SHAPE_RANGE: -4.0, 4.0
+      FITWIN_SHAPE: -4.0, +4.0
+      FITWIN_COLOR: -0.4, +0.4
+      FITWIN_PROB:  0.0,  1.01
+      FITWIN_TREST:  -15.0, 45.0
+    # OPTS:
+    #   BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2a.TEMPLATE 80 # 2a broadwl-lc max 100 jobs,  2b (default) max 500 jobs
