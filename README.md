@@ -5,7 +5,7 @@
 
 Code to reproduce analysis in "DES 5-year photometrically identified SNe Ia using host galaxy redshifts" Möller et al. 2022.
 
-We use the photometric classification framework [SuperNNova](https://github.com/supernnova/SuperNNova) [(Möller & de Boissière 2019)](https://academic.oup.com/mnras/article-abstract/491/3/4277/5651173) trained on realistic DES-like simulations to classify DES 5-year data and obtain SNe Ia for astrophysics and cosmology analysis.
+We use the photometric classification framework [SuperNNova](https://github.com/supernnova/SuperNNova) [(Möller & de Boissière 2019)](https://academic.oup.com/mnras/article-abstract/491/3/4277/5651173) to classify [Dark Energy Survey](https://www.darkenergysurvey.org) 5-year data and obtain SNe Ia for astrophysics and cosmology analysis.
 
 This repository contains:
 - ./reproduce/Pippin* : configuration files to recreate simulations used in the analysis using [pippin](https://github.com/dessn/Pippin) (Hinton & Brout 2020) analysis pipeline
