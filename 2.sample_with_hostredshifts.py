@@ -217,6 +217,16 @@ if __name__ == "__main__":
     )
 
     specIas_JLA = su.apply_JLA_cut(specIas)
+    pu.plot_mosaic_histograms_listdf(
+        [photo_Ia, specIas_JLA],
+        list_labels=["photo SNe Ia", "spec SNe Ia"],
+        path_plots=path_plots,
+        suffix="photospecJLA",
+        list_vars_to_plot=["zHD", "c", "x1"],
+        data_color_override=True,
+        chi_bins=False,
+    )
+
     lost_spec = [k for k in specIas_JLA.SNID.values if k not in photo_Ia.SNID.values]
     lu.print_green(
         f"Lost specIas during photometric classification + JLA {len(lost_spec)}"
