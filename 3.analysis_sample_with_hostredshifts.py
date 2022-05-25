@@ -248,6 +248,25 @@ if __name__ == "__main__":
         list_labels=["sim Ia JLA", "Baseline DES JLA",],
         path_plots=path_plots,
     )
+    # add info wether is deep fields or not
+    sim_Ia_fits_JLA["deep"] = sim_Ia_fits_JLA["FIELD"].apply(
+        lambda row: any(f in row for f in ["X3", "C3"])
+    )
+    sample_fits["deep"] = sample_fits["FIELD"].apply(
+        lambda row: any(f in row for f in ["X3", "C3"])
+    )
+    # deep
+    sim_Ia_fits_JLA_deep = sim_Ia_fits_JLA[sim_Ia_fits_JLA["deep"] == True]
+    sample_fits_deep = sample_fits[sample_fits["deep"] == True]
+    # shallow fields
+    sim_Ia_fits_JLA_shallow = sim_Ia_fits_JLA[sim_Ia_fits_JLA["deep"] != True]
+    sample_fits_shallow = sample_fits[sample_fits["deep"] != True]
+    pu.overplot_salt_distributions_lists_deep_shallow(
+        [sim_Ia_fits_JLA, sample_fits,],
+        list_labels=["sim Ia JLA", "Baseline DES JLA",],
+        path_plots=path_plots,
+        suffix="deep_and_shallow_fields",
+    )
     print("n events in each zbin")
     sample_fits.groupby("zHD_bin").count()["SNID"]
 

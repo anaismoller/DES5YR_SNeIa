@@ -22,36 +22,8 @@ mpl.rcParams["legend.fontsize"] = "medium"
 mpl.rcParams["figure.titlesize"] = "large"
 mpl.rcParams["lines.linewidth"] = 3
 
-ALL_COLORS = [
-    "maroon",
-    "royalblue",
-    "indigo",
-    "darkorange",
-    "royalblue",
-    "indigo",
-    "maroon",
-    "darkorange",
-    "royalblue",
-    "indigo",
-    "maroon",
-    "darkorange",
-    "royalblue",
-    "indigo",
-    "maroon",
-    "darkorange",
-    "royalblue",
-    "indigo",
-    "maroon",
-    "darkorange",
-    "royalblue",
-    "indigo",
-]
-ALL_COLORS_nodata = (
-    ["darkorange"]
-    + [k for k in ALL_COLORS if k != "maroon"]
-    + ["darkorange"]
-    + [k for k in ALL_COLORS if k != "maroon"]
-)
+ALL_COLORS = ["maroon", "royalblue", "indigo", "royalblue", "indigo",] * 10
+ALL_COLORS_nodata = ["darkorange"] + ALL_COLORS
 BI_COLORS = ["darkorange", "royalblue"]
 CONTRAST_COLORS = ["darkorange", "grey", "indigo"]
 MARKER_DIC = {"randomforest": "o", "CNN": "D", "vanilla": "s"}
@@ -457,10 +429,11 @@ def plot_errorbar_binned(
     binname="zbin",
     varx="zHD",
     vary="c",
-    list_colors=ALL_COLORS,
     axs=None,
     sim_scale_factor=150,
     data_color_override=False,
+    ignore_y_label=False,
+    color_offset=0,
 ):
     if axs == None:
         plt.clf()
@@ -490,8 +463,8 @@ def plot_errorbar_binned(
                     alpha=0.5,
                 )
             # plot 68 percentile
-            result_low = np.percentile(list_vary, 16, axis=0)
-            result_high = np.percentile(list_vary, 84, axis=0)
+            result_low = np.nanpercentile(list_vary, 16, axis=0)
+            result_high = np.nanpercentile(list_vary, 84, axis=0)
             axs.fill_between(
                 val_varx,
                 result_low,
@@ -511,16 +484,19 @@ def plot_errorbar_binned(
             or "photo" in list_labels[i]
             or "DES" in list_labels[i]
             else "",
-            color=ALL_COLORS_nodata[i]
+            color=ALL_COLORS_nodata[i + color_offset]
             if data_color_override
             else color_dic["data"]
             if "data" in list_labels[i]
             or "photo" in list_labels[i]
             or "DES" in list_labels[i]
-            else ALL_COLORS_nodata[i],
+            else ALL_COLORS_nodata[i + color_offset],
             zorder=50 if "data" in list_labels[i] else i,  # hack to put data on top
         )
-    axs.set_ylabel(vary, fontsize=20)
+    if not ignore_y_label:
+        axs.set_ylabel(vary, fontsize=20)
+    if ignore_y_label:
+        axs.set_yticks([])
     if axs == None:
         axs.set_xlabel(varx)
         return fig
@@ -905,7 +881,6 @@ def plot_mosaic_histograms_listdf(
     fig = plt.figure(figsize=(18, 5), constrained_layout=True)
     gs = fig.add_gridspec(1, len(list_vars_to_plot), hspace=0, wspace=0.05)
     axs = gs.subplots(sharex=False, sharey=True)
-
     for i, k in enumerate(list_vars_to_plot):
         sim_vals_list = []
         sim_label_list = []
@@ -1006,6 +981,209 @@ def plot_mosaic_histograms_listdf(
     del fig
 
 
+def plot_mosaic_histograms_listdf_deep_shallow(
+    list_df,
+    list_labels=["tmp"],
+    path_plots="./",
+    suffix="",
+    list_vars_to_plot=["zHD", "c", "x1"],
+    norm=1 / 150,
+    data_color_override=False,
+    chi_bins=True,
+    log_scale=False,
+):
+
+    bins_to_plot = chi_bins_dic if chi_bins == True else bins_dic
+
+    plt.clf()
+    fig = plt.figure(figsize=(18, 10), constrained_layout=True)
+    gs = fig.add_gridspec(2, len(list_vars_to_plot), hspace=0, wspace=0.01)
+    axs = gs.subplots(sharex=False, sharey=True)
+
+    for i, k in enumerate(list_vars_to_plot):
+        sim_vals_list_deep = []
+        sim_label_list_deep = []
+        sim_vals_list_shallow = []
+        sim_label_list_shallow = []
+        for df_idx, df in enumerate(list_df):
+            if "sim" in list_labels[df_idx]:
+                # deep
+                deep = df[df.deep == True]
+                norm = norm
+                sim_vals_deep, _, _ = axs[1][i].hist(
+                    deep[k],
+                    histtype="step",
+                    label=f"{list_labels[df_idx]} deep",
+                    density=False,
+                    bins=bins_to_plot[k],
+                    weights=norm * np.ones(len(deep)),
+                    linewidth=5,
+                    color=ALL_COLORS_nodata[df_idx + 1],
+                    linestyle=list_linestyle[df_idx],
+                )
+                sim_vals_list_deep.append(sim_vals_deep)
+                tmp = "f" if "fixed" in list_labels[df_idx] else "S"
+                sim_label_list_deep.append(tmp)
+                # shallow
+                shallow = df[df.deep != True]
+                norm = norm
+                sim_vals_shallow, _, _ = axs[0][i].hist(
+                    shallow[k],
+                    histtype="step",
+                    label=f"{list_labels[df_idx]} shallow",
+                    density=False,
+                    bins=bins_to_plot[k],
+                    weights=norm * np.ones(len(shallow)),
+                    linewidth=5,
+                    color=ALL_COLORS_nodata[df_idx],
+                    linestyle=list_linestyle[df_idx],
+                )
+                sim_vals_list_shallow.append(sim_vals_shallow)
+                tmp = "f" if "fixed" in list_labels[df_idx] else "S"
+                sim_label_list_shallow.append(tmp)
+            else:
+                # deep
+                deep = df[df.deep == True]
+                deep["tmp_bin"] = pd.cut(deep.loc[:, (k)], bins_to_plot[k])
+                err = np.sqrt(deep.groupby("tmp_bin").count()[k].values)
+
+                err[np.abs(err) == inf] = 0
+                data_hist_vals_deep, bin_edges = np.histogram(
+                    deep[k], density=False, bins=bins_to_plot[k]
+                )
+                du.print_stats(deep[k], context=f"{k} {list_labels[df_idx]}")
+                if data_color_override == True:
+                    axs[0][i].errorbar(
+                        bin_edges[1:] - (bin_edges[1] - bin_edges[0]) / 2.0,
+                        data_hist_vals_deep,
+                        yerr=err,
+                        fmt="none",
+                        ecolor=ALL_COLORS[df_idx],
+                    )
+                    axs[0][i].hist(
+                        df[k],
+                        histtype="step",
+                        label=list_labels[f"{df_idx} deep"],
+                        density=False,
+                        bins=bins_to_plot[k],
+                        linewidth=5,
+                        color=ALL_COLORS[df_idx],
+                        linestyle=list_linestyle[df_idx],
+                    )
+                # shallow
+                shallow = df[df.deep != True]
+                shallow["tmp_bin"] = pd.cut(shallow.loc[:, (k)], bins_to_plot[k])
+                err = np.sqrt(shallow.groupby("tmp_bin").count()[k].values)
+
+                err[np.abs(err) == inf] = 0
+                data_hist_vals_shallow, bin_edges = np.histogram(
+                    shallow[k], density=False, bins=bins_to_plot[k]
+                )
+                du.print_stats(shallow[k], context=f"{k} {list_labels[df_idx]}")
+
+                if data_color_override == True:
+                    axs[0][i].errorbar(
+                        bin_edges[1:] - (bin_edges[1] - bin_edges[0]) / 2.0,
+                        data_hist_vals_shallow,
+                        yerr=err,
+                        fmt="none",
+                        ecolor=ALL_COLORS[df_idx],
+                    )
+                    axs[0][i].hist(
+                        df[k],
+                        histtype="step",
+                        label=f"{list_labels[df_idx]} shallow",
+                        density=False,
+                        bins=bins_to_plot[k],
+                        linewidth=5,
+                        color=ALL_COLORS[df_idx],
+                        linestyle=list_linestyle[df_idx],
+                    )
+                else:
+                    # deep
+                    axs[1][i].errorbar(
+                        bin_edges[1:] - (bin_edges[1] - bin_edges[0]) / 2.0,
+                        data_hist_vals_deep,
+                        yerr=err,
+                        label=f"{list_labels[df_idx]} deep",
+                        fmt="o",
+                        color=color_dic["data"]
+                        if data_color_override == False
+                        else ALL_COLORS[df_idx],
+                        markersize=8,
+                        mfc=color_dic["data"]
+                        if data_color_override == False
+                        else ALL_COLORS[df_idx],
+                    )
+                    # shallow
+                    axs[0][i].errorbar(
+                        bin_edges[1:] - (bin_edges[1] - bin_edges[0]) / 2.0,
+                        data_hist_vals_shallow,
+                        yerr=err,
+                        label=f"{list_labels[df_idx]} shallow",
+                        fmt="o",
+                        color=color_dic["data"],
+                        markersize=8,
+                        mfc=color_dic["data"]
+                        if data_color_override == False
+                        else ALL_COLORS[df_idx],
+                    )
+
+        counter = 0
+        for sim_vals in sim_vals_list_deep:
+            chi = my_chisquare(data_hist_vals_deep, err, sim_vals)
+            mask = np.where(sim_vals != 0)
+            nbins = len(mask[0])
+            if len(sim_label_list_deep) > 1:
+                tmptag = sim_label_list_deep[counter]
+                tmp = fr"$\chi^2_{tmptag}=$"
+                text_chi2 = f"{tmp} {round(chi,1)}/{nbins}"
+            else:
+                tmp = r"$\chi^2/bins=$"
+                text_chi2 = f"{tmp} {round(chi,1)}/{nbins}"
+            axs[1][i].annotate(
+                text_chi2,
+                xy=(0.03, 0.90 - 0.15 * counter),
+                size=16,
+                xycoords="axes fraction",
+            )
+            counter += 1
+        xlabel = k if k != "m0obs_i" else r"$i_{peak}$"
+        axs[1][i].set_xlabel(xlabel, fontsize=20)
+        if log_scale:
+            axs[1][i].set_yscale("log")
+
+        for sim_vals in sim_vals_list_shallow:
+            chi = my_chisquare(data_hist_vals_shallow, err, sim_vals)
+            mask = np.where(sim_vals != 0)
+            nbins = len(mask[0])
+            if len(sim_label_list_shallow) > 1:
+                tmptag = sim_label_list_shallow[counter]
+                tmp = fr"$\chi^2_{tmptag}=$"
+                text_chi2 = f"{tmp} {round(chi,1)}/{nbins}"
+            else:
+                tmp = r"$\chi^2/bins=$"
+                text_chi2 = f"{tmp} {round(chi,1)}/{nbins}"
+            axs[0][i].annotate(
+                text_chi2,
+                xy=(0.03, 1 - 0.15 * counter),
+                size=16,
+                xycoords="axes fraction",
+            )
+            counter += 1
+        xlabel = k if k != "m0obs_i" else r"$i_{peak}$"
+        axs[0][i].set_xlabel(xlabel, fontsize=20)
+        if log_scale:
+            axs[0][i].set_yscale("log")
+    axs[1][0].set_ylabel("# events")
+    axs[0][0].set_ylabel("# events")
+    axs[1][-1].legend(bbox_to_anchor=(1.05, 0.5), loc=2, borderaxespad=0.0, fontsize=16)
+    axs[0][-1].legend(bbox_to_anchor=(1.05, 0.5), loc=2, borderaxespad=0.0, fontsize=16)
+    plt.savefig(f"{path_plots}/hists_sample_sim_Ia{suffix}.png")
+    plt.clf()
+    del fig
+
+
 def overplot_salt_distributions_lists(
     list_df,
     list_labels=["tmp"],
@@ -1075,6 +1253,76 @@ def overplot_salt_distributions_lists(
         plt.savefig(f"{path_plots}/2ddist_sample_sim_Ia_cx1_{xbin}_{suffix}.png")
     else:
         plt.savefig(f"{path_plots}/2ddist_sample_sim_Ia_cx1_{xbin}.png")
+    del fig
+
+
+def overplot_salt_distributions_lists_deep_shallow(
+    list_df,
+    list_labels=["tmp"],
+    path_plots="./",
+    suffix="",
+    sim_scale_factor=150,
+    data_color_override=False,
+):
+    plot_mosaic_histograms_listdf_deep_shallow(
+        list_df,
+        list_labels=list_labels,
+        path_plots=path_plots,
+        suffix=suffix,
+        norm=1 / sim_scale_factor,
+        list_vars_to_plot=["zHD", "c", "x1", "m0obs_i"],
+        data_color_override=data_color_override,
+    )
+
+    # zHD binned c,x1 together (same as above only formatting)
+    xbin = "zHD"
+    to_plot = ["c", "x1"]
+    fig = plt.figure(figsize=(20, 10), constrained_layout=True)
+    gs = fig.add_gridspec(2, 2, hspace=0, wspace=0)
+    axs = gs.subplots(sharex=True, sharey=False)
+
+    list_df_shallow = [f[f.deep != True] for f in list_df]
+    list_df_deep = [f[f.deep == True] for f in list_df]
+    for i, k in enumerate(to_plot):
+        # shallow
+        plot_errorbar_binned(
+            list_df_shallow,
+            [f"{l} shallow" for l in list_labels],
+            binname=f"{xbin}_bin",
+            varx=xbin,
+            vary=k,
+            axs=axs[i][0],
+            sim_scale_factor=sim_scale_factor,
+            data_color_override=data_color_override,
+        )
+        # deep
+        plot_errorbar_binned(
+            list_df_deep,
+            [f"{l} deep" for l in list_labels],
+            binname=f"{xbin}_bin",
+            varx=xbin,
+            vary=k,
+            axs=axs[i][1],
+            sim_scale_factor=sim_scale_factor,
+            data_color_override=data_color_override,
+            ignore_y_label=True,
+            color_offset=1,
+        )
+    axs[0][0].legend(loc="best")
+    axs[0][1].legend(loc="best")
+    axs[1][0].set_xlabel(xbin, fontsize=20)
+    axs[1][1].set_xlabel(xbin, fontsize=20)
+    # lims
+    axs[0][0].set_ylim(-0.2, 0.2)
+    axs[1][0].set_ylim(-1, 1)
+    axs[0][1].set_ylim(-0.2, 0.2)
+    axs[1][1].set_ylim(-1, 1)
+    if suffix != "":
+        plt.savefig(
+            f"{path_plots}/2ddist_sample_sim_Ia_cx1_{xbin}_{suffix}_deep_shallow.png"
+        )
+    else:
+        plt.savefig(f"{path_plots}/2ddist_sample_sim_Ia_cx1_{xbin}_deep_shallow.png")
     del fig
 
 
