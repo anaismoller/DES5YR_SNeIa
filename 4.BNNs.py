@@ -244,6 +244,130 @@ def plot_uncertainties_cuts(
     plt.savefig(f"{path_plots}/uncertainties_cuts_{suffix}.png")
 
 
+def plot_uncertainties_mosaic(
+    preds,
+    sim_fits,
+    df_dic,
+    var="all_class0_S_0",
+    var_unc="all_class0_std_S_0",
+    suffix="S_0",
+    plot_probs=False,
+    list_vars_to_plot=["all_class0_S_0", "SNRMAX3", "zHD"],
+):
+    counter = 0
+    plt.clf()
+    fig = plt.figure(figsize=(18, 8), constrained_layout=True)
+    gs = fig.add_gridspec(2, len(list_vars_to_plot), hspace=0, wspace=0.05)
+    axs = gs.subplots(sharex="col", sharey=True)
+    tmp_bins = {
+        "zHD": np.linspace(0.05, 1.2, 8),
+        "c": np.linspace(-0.4, 0.4, 8),
+        "x1": np.linspace(-4, 4, 8),
+        "all_class0_S_0": np.linspace(0, 1, 8),
+        "SNRMAX3": np.linspace(3, 20, 8),
+        "m0obs_i": np.linspace(21, 25, 8),
+    }
+    for nn in ["variational", "bayesian"]:
+        for i, k in enumerate(list_vars_to_plot):
+            if k == "SNRMAX3":  # signal-to-noise of the 3rd brightest (3rd highest S/N)
+                # only plotting usual SN range..
+                # <0 handful events, template issues
+                # >100 handful events
+                to_plot = preds[nn][(preds[nn].SNRMAX3 > 3) & (preds[nn].SNRMAX3 < 20)]
+            else:
+                to_plot = preds[nn]
+            # add mean uncertainty per bin
+            mean_bins = tmp_bins[k][:-1] + (tmp_bins[k][1] - tmp_bins[k][0]) / 2
+            to_plot[f"{k}_bin"] = pd.cut(
+                to_plot.loc[:, (k)], tmp_bins[k], labels=mean_bins
+            )
+            tmp = to_plot.groupby(f"{k}_bin").median()
+            # uncertainty in data
+            result_low = (
+                to_plot[[f"{k}_bin", var_unc]].groupby(f"{k}_bin").quantile(0.16)
+            )[var_unc].values
+            result_high = (
+                to_plot[[f"{k}_bin", var_unc]].groupby(f"{k}_bin").quantile(0.84)
+            )[var_unc].values
+            axs[counter][i].fill_between(
+                mean_bins,
+                result_low,
+                result_high,
+                color="maroon",
+                alpha=0.2,
+                zorder=90,
+            )
+            if plot_probs:
+                sc = axs[counter][i].scatter(
+                    mean_bins,
+                    tmp[var_unc].values,
+                    c=tmp[var].values,
+                    s=80,
+                    marker="D",
+                    edgecolors="black",
+                    linewidth=3,
+                    zorder=100,
+                    cmap="cividis",
+                    vmin=0,
+                    vmax=1,
+                )
+            else:
+                axs[counter][i].errorbar(mean_bins, tmp[var_unc].values, color="maroon")
+            # uncertainty in sim
+            sim_to_plot = pd.merge(sim_fits, df_dic[nn]["cosmo_quantile"], on="SNID")
+            sim_to_plot[f"{k}_bin"] = pd.cut(
+                sim_to_plot.loc[:, (k)], tmp_bins[k], labels=mean_bins
+            )
+            tmp_sim = sim_to_plot.groupby(f"{k}_bin").median()
+            tmp_sim_err = sim_to_plot.groupby(f"{k}_bin").std()[var_unc].values
+            # uncertainty insim
+            result_low = (
+                sim_to_plot[[f"{k}_bin", var_unc]].groupby(f"{k}_bin").quantile(0.16)
+            )[var_unc].values
+            result_high = (
+                sim_to_plot[[f"{k}_bin", var_unc]].groupby(f"{k}_bin").quantile(0.84)
+            )[var_unc].values
+            axs[counter][i].fill_between(
+                mean_bins,
+                result_low,
+                result_high,
+                color="darkgrey",
+                alpha=0.8,
+                zorder=-20,
+            )
+            axs[counter][i].errorbar(
+                mean_bins,
+                tmp_sim[var_unc].values,
+                color="black",
+                alpha=0.5,
+                linestyle="--",
+            )
+
+            axs[counter][i].set_yscale("log")
+            axs[counter][i].set_ylim(10e-6, 0.4)
+
+            if k == "all_class0_S_0":
+                xlab = "classification probability"
+            elif k == "m0obs_i":
+                xlab = r"$i_{peak}$"
+            else:
+                xlab = k
+            axs[1][i].set_xlabel(xlab)
+        counter += 1
+    if plot_probs:
+        clb = plt.colorbar(sc, location="bottom", ax=axs, fraction=0.1)
+        clb.ax.set_title("classification probability", fontsize=16)
+        x_axis_title = 2
+    else:
+        x_axis_title = 1
+    axs[0][x_axis_title].set_title("MC dropout", fontsize=18)
+    axs[1][x_axis_title].set_title("Bayes by Backprop", fontsize=18)
+    axs[0][0].set_ylabel("classification uncertainty", fontsize=16)
+    axs[1][0].set_ylabel("classification uncertainty", fontsize=16)
+    plt.savefig(f"{path_plots}/scatter_uncertainty_mosaic_{suffix}.png")
+    plt.clf()
+
+
 def setup_logging():
     logger = None
 
@@ -592,147 +716,26 @@ if __name__ == "__main__":
     path_plots = f"{path_dump}/plots_sample_bothBNNs/"
     os.makedirs(path_plots, exist_ok=True)
 
-    def plot_uncertainties_mosaic(
+    plot_uncertainties_mosaic(
+        preds,
+        sim_fits,
+        df_dic,
         var="all_class0_S_0",
         var_unc="all_class0_std_S_0",
         suffix="S_0",
-        plot_probs=False,
-        list_vars_to_plot=["all_class0_S_0", "SNRMAX3", "zHD"],
-    ):
-        counter = 0
-        plt.clf()
-        fig = plt.figure(figsize=(18, 8), constrained_layout=True)
-        gs = fig.add_gridspec(2, len(list_vars_to_plot), hspace=0, wspace=0.05)
-        axs = gs.subplots(sharex="col", sharey=True)
-        tmp_bins = {
-            "zHD": np.linspace(0.05, 1.2, 8),
-            "c": np.linspace(-0.4, 0.4, 8),
-            "x1": np.linspace(-4, 4, 8),
-            "all_class0_S_0": np.linspace(0, 1, 8),
-            "SNRMAX3": np.linspace(3, 20, 8),
-            "m0obs_i": np.linspace(21, 25, 8),
-        }
-        for nn in ["variational", "bayesian"]:
-            for i, k in enumerate(list_vars_to_plot):
-                if (
-                    k == "SNRMAX3"
-                ):  # signal-to-noise of the 3rd brightest (3rd highest S/N)
-                    # only plotting usual SN range..
-                    # <0 handful events, template issues
-                    # >100 handful events
-                    to_plot = preds[nn][
-                        (preds[nn].SNRMAX3 > 3) & (preds[nn].SNRMAX3 < 20)
-                    ]
-                else:
-                    to_plot = preds[nn]
-                # add mean uncertainty per bin
-                mean_bins = tmp_bins[k][:-1] + (tmp_bins[k][1] - tmp_bins[k][0]) / 2
-                to_plot[f"{k}_bin"] = pd.cut(
-                    to_plot.loc[:, (k)], tmp_bins[k], labels=mean_bins
-                )
-                tmp = to_plot.groupby(f"{k}_bin").median()
-                # uncertainty in data
-                result_low = (
-                    to_plot[[f"{k}_bin", var_unc]].groupby(f"{k}_bin").quantile(0.16)
-                )[var_unc].values
-                result_high = (
-                    to_plot[[f"{k}_bin", var_unc]].groupby(f"{k}_bin").quantile(0.84)
-                )[var_unc].values
-                axs[counter][i].fill_between(
-                    mean_bins,
-                    result_low,
-                    result_high,
-                    color="maroon",
-                    alpha=0.2,
-                    zorder=90,
-                )
-                if plot_probs:
-                    sc = axs[counter][i].scatter(
-                        mean_bins,
-                        tmp[var_unc].values,
-                        c=tmp[var].values,
-                        s=80,
-                        marker="D",
-                        edgecolors="black",
-                        linewidth=3,
-                        zorder=100,
-                        cmap="cividis",
-                        vmin=0,
-                        vmax=1,
-                    )
-                else:
-                    axs[counter][i].errorbar(
-                        mean_bins, tmp[var_unc].values, color="maroon"
-                    )
-                # uncertainty in sim
-                sim_to_plot = pd.merge(
-                    sim_fits, df_dic[nn]["cosmo_quantile"], on="SNID"
-                )
-                sim_to_plot[f"{k}_bin"] = pd.cut(
-                    sim_to_plot.loc[:, (k)], tmp_bins[k], labels=mean_bins
-                )
-                tmp_sim = sim_to_plot.groupby(f"{k}_bin").median()
-                tmp_sim_err = sim_to_plot.groupby(f"{k}_bin").std()[var_unc].values
-                # uncertainty insim
-                result_low = (
-                    sim_to_plot[[f"{k}_bin", var_unc]]
-                    .groupby(f"{k}_bin")
-                    .quantile(0.16)
-                )[var_unc].values
-                result_high = (
-                    sim_to_plot[[f"{k}_bin", var_unc]]
-                    .groupby(f"{k}_bin")
-                    .quantile(0.84)
-                )[var_unc].values
-                axs[counter][i].fill_between(
-                    mean_bins,
-                    result_low,
-                    result_high,
-                    color="darkgrey",
-                    alpha=0.8,
-                    zorder=-20,
-                )
-                axs[counter][i].errorbar(
-                    mean_bins,
-                    tmp_sim[var_unc].values,
-                    color="black",
-                    alpha=0.5,
-                    linestyle="--",
-                )
-
-                axs[counter][i].set_yscale("log")
-                axs[counter][i].set_ylim(10e-6, 0.4)
-
-                if k == "all_class0_S_0":
-                    xlab = "classification probability"
-                elif k == "m0obs_i":
-                    xlab = r"$i_{peak}$"
-                else:
-                    xlab = k
-                axs[1][i].set_xlabel(xlab)
-            counter += 1
-        if plot_probs:
-            clb = plt.colorbar(sc, location="bottom", ax=axs, fraction=0.1)
-            clb.ax.set_title("classification probability", fontsize=16)
-            x_axis_title = 2
-        else:
-            x_axis_title = 1
-        axs[0][x_axis_title].set_title("MC dropout", fontsize=18)
-        axs[1][x_axis_title].set_title("Bayes by Backprop", fontsize=18)
-        axs[0][0].set_ylabel("classification uncertainty", fontsize=16)
-        axs[1][0].set_ylabel("classification uncertainty", fontsize=16)
-        plt.savefig(f"{path_plots}/scatter_uncertainty_mosaic_{suffix}.png")
-        plt.clf()
-
-    plot_uncertainties_mosaic(
-        var="all_class0_S_0", var_unc="all_class0_std_S_0", suffix="S_0"
     )
     plot_uncertainties_mosaic(
+        preds,
+        sim_fits,
+        df_dic,
         var="average_probability_set_0",
         var_unc="average_probability_set_0_meanstd",
         suffix="set_0",
     )
     plot_uncertainties_mosaic(
+        preds,
+        sim_fits,
+        df_dic,
         var="average_probability_set_0",
         var_unc="average_probability_set_0_meanstd",
         plot_probs=True,
