@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn import metrics
 from . import logging_utils as lu
+from utils import conf_utils as cu
 
 
 def performance_metrics(
@@ -140,3 +141,38 @@ def reformatting_tolatex(df, norm_list=["cosmo", "cosmo_quantile"], dataset="bal
         print("\multicolumn", {tmp.shape[-1]}, "{c}{", norm, "}\\\\")
         print("\hline")
         print(tmp.to_latex(index=False))
+
+
+def cuts_deep_shallow(df_sel, df_stats=pd.DataFrame(), cut=""):
+
+    if len(df_stats) == 0:
+        df_stats = pd.DataFrame(
+            columns=[
+                "cut",
+                "shallow selected",
+                "shallow spec Ia",
+                "deep selected",
+                "deep spec Ia",
+                "total selected",
+                "total spec Ia",
+            ]
+        )
+
+    # determine shallow or deep
+    deep_fields = ["X3", "C3"]
+    df_shallow = df_sel[~df_sel.IAUC.str.contains("|".join(deep_fields))]
+    df_deep = df_sel[df_sel.IAUC.str.contains("|".join(deep_fields))]
+
+    dict_t = {}
+    dict_t["cut"] = cut
+    dict_t["shallow selected"] = len(df_shallow)
+    dict_t["shallow spec Ia"] = len(
+        df_shallow[df_shallow.SNTYPE.isin(cu.spec_tags["Ia"])]
+    )
+    dict_t["deep selected"] = len(df_deep)
+    dict_t["deep spec Ia"] = len(df_deep[df_deep.SNTYPE.isin(cu.spec_tags["Ia"])])
+    dict_t["total selected"] = len(df_sel)
+    dict_t["total spec Ia"] = len(df_sel[df_sel.SNTYPE.isin(cu.spec_tags["Ia"])])
+    df_stats = df_stats.append(dict_t, ignore_index=True)
+
+    return df_stats

@@ -11,6 +11,8 @@ from utils import data_utils as du
 from utils import conf_utils as cu
 from utils import logging_utils as lu
 from utils import science_utils as su
+from utils import metric_utils as mu
+
 
 plt.switch_backend("agg")
 
@@ -120,12 +122,17 @@ if __name__ == "__main__":
     )
     cuts.spec_subsamples(df_metadata, logger)
 
+    df_stats = mu.cuts_deep_shallow(df_metadata, cut="DES-SN 5-year candidate sample")
+
     # OOD cuts
     # detection cuts (fast + multi-season)
     df_metadata_w_dets = cuts.detections("DETECTIONS", df_metadata, logger)
     # multiseason
     df_metadata_w_multiseason = cuts.transient_status(
         "MULTI-SEASON", df_metadata_w_dets, logger
+    )
+    df_stats = mu.cuts_deep_shallow(
+        df_metadata_w_multiseason, df_stats=df_stats, cut="Filtering multi-season"
     )
 
     logger.info("")
@@ -137,6 +144,9 @@ if __name__ == "__main__":
 
     # REDSHIFT
     df_metadata_sel = cuts.redshift("REDSHIFT", df_metadata_w_multiseason, logger)
+    df_stats = mu.cuts_deep_shallow(
+        df_metadata_sel, df_stats=df_stats, cut="Requiring redshifts in 0.05<z<1.3"
+    )
     SNID_3yr_spec = df_metadata_sel[
         (df_metadata_sel["IAUC"].str.contains("DES15|DES14|DES13"))
         & (df_metadata_sel["SNTYPE"].isin(cu.spec_tags["Ia"]))
@@ -146,6 +156,9 @@ if __name__ == "__main__":
     df_salt = du.load_salt_fits(path_fits)
     df_metadata_sel = cuts.salt_basic(
         "SALT sampling + convergence", df_metadata_sel, df_salt, logger
+    )
+    df_stats = mu.cuts_deep_shallow(
+        df_metadata_sel, df_stats=df_stats, cut="SALT2 loose selection cuts"
     )
     SNID_3yr_spec_salt = df_metadata_sel[
         (df_metadata_sel["IAUC"].str.contains("DES15|DES14|DES13"))
@@ -184,6 +197,11 @@ if __name__ == "__main__":
     dic_df_photoIa_wsalt, df_photoIa_stats = cuts.photo_norm(
         df_metadata_sel, path_class, path_dump, logger, path_plots=path_plots
     )
+    df_stats = mu.cuts_deep_shallow(
+        dic_df_photoIa_wsalt["cosmo_quantile"]["average_probability_set_0"],
+        df_stats=df_stats,
+        cut="RNN ensemble>0.5 (Baseline DES-SNIa)",
+    )
 
     # save sample with loose sel cuts
     dic_df_photoIa_wsalt[norm][method].to_csv(
@@ -204,6 +222,13 @@ if __name__ == "__main__":
     dic_photoIa_sel = cuts.towards_cosmo(dic_df_photoIa_wsalt, df_photoIa_stats, logger)
 
     photo_Ia = dic_photoIa_sel[norm][method]
+    df_stats = mu.cuts_deep_shallow(
+        photo_Ia, df_stats=df_stats, cut="JLA-like cut (Baseline DES-SNIa JLA)",
+    )
+
+    lu.print_blue("Stats")
+    print(df_stats)
+    print("")
 
     photo_Ia.to_csv(f"{path_samples}/photoIa_{norm}_{method}.csv")
     photo_Ia.to_csv(f"{path_samples}/BaselineDESsample_JLAlikecuts.csv")
