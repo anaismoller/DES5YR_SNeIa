@@ -1,4 +1,3 @@
-import ipdb
 import numpy as np
 import pandas as pd
 from venn import venn
@@ -1025,7 +1024,7 @@ def plot_mosaic_histograms_listdf_deep_shallow(
                 tmp = "f" if "fixed" in list_labels[df_idx] else "S"
                 sim_label_list_deep.append(tmp)
                 # shallow
-                shallow = df[df.deep != True]
+                shallow = df[df.shallow == True]
                 norm = norm
                 sim_vals_shallow, _, _ = axs[0][i].hist(
                     shallow[k],
@@ -1071,7 +1070,7 @@ def plot_mosaic_histograms_listdf_deep_shallow(
                         linestyle=list_linestyle[df_idx],
                     )
                 # shallow
-                shallow = df[df.deep != True]
+                shallow = df[df.shallow == True]
                 shallow["tmp_bin"] = pd.cut(shallow.loc[:, (k)], bins_to_plot[k])
                 err = np.sqrt(shallow.groupby("tmp_bin").count()[k].values)
 
@@ -1208,6 +1207,7 @@ def overplot_salt_distributions_lists(
         bins = bins_dic[xbin]
 
         for df_idx, df in enumerate(list_df):
+            # Beware, values outside these ranges are given a bin=NaN
             df[f"{xbin}_bin"] = pd.cut(df.loc[:, (xbin)], bins)
 
         to_plot = ["c", "x1", "HOST_LOGMASS"] if xbin == "zHD" else ["c", "x1", "zHD"]
@@ -1281,7 +1281,7 @@ def overplot_salt_distributions_lists_deep_shallow(
     gs = fig.add_gridspec(2, 2, hspace=0, wspace=0)
     axs = gs.subplots(sharex=True, sharey=False)
 
-    list_df_shallow = [f[f.deep != True] for f in list_df]
+    list_df_shallow = [f[f.shallow == True] for f in list_df]
     list_df_deep = [f[f.deep == True] for f in list_df]
     for i, k in enumerate(to_plot):
         # shallow

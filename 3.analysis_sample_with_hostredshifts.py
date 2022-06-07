@@ -255,12 +255,23 @@ if __name__ == "__main__":
     sample_fits["deep"] = sample_fits["FIELD"].apply(
         lambda row: any(f in row for f in ["X3", "C3"])
     )
+    sim_Ia_fits_JLA["shallow"] = sim_Ia_fits_JLA["FIELD"].apply(
+        lambda row: any(
+            f in row for f in ["X1", "X2", "C1", "C2", "E1", "E2", "S1", "S2"]
+        )
+    )
+    sample_fits["shallow"] = sample_fits["FIELD"].apply(
+        lambda row: any(
+            f in row for f in ["X1", "X2", "C1", "C2", "E1", "E2", "S1", "S2"]
+        )
+    )
     # deep
     sim_Ia_fits_JLA_deep = sim_Ia_fits_JLA[sim_Ia_fits_JLA["deep"] == True]
     sample_fits_deep = sample_fits[sample_fits["deep"] == True]
     # shallow fields
-    sim_Ia_fits_JLA_shallow = sim_Ia_fits_JLA[sim_Ia_fits_JLA["deep"] != True]
-    sample_fits_shallow = sample_fits[sample_fits["deep"] != True]
+    sim_Ia_fits_JLA_shallow = sim_Ia_fits_JLA[sim_Ia_fits_JLA["shallow"] == True]
+    sample_fits_shallow = sample_fits[sample_fits["shallow"] == True]
+
     pu.overplot_salt_distributions_lists_deep_shallow(
         [sim_Ia_fits_JLA, sample_fits,],
         list_labels=["sim Ia JLA", "Baseline DES JLA",],

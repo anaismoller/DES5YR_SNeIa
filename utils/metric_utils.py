@@ -160,7 +160,8 @@ def cuts_deep_shallow(df_sel, df_stats=pd.DataFrame(), cut=""):
 
     # determine shallow or deep
     deep_fields = ["X3", "C3"]
-    df_shallow = df_sel[~df_sel.IAUC.str.contains("|".join(deep_fields))]
+    shallow_fields = ["X1", "X2", "C1", "C2", "E1", "E2", "S1", "S2"]
+    df_shallow = df_sel[df_sel.IAUC.str.contains("|".join(shallow_fields))]
     df_deep = df_sel[df_sel.IAUC.str.contains("|".join(deep_fields))]
 
     dict_t = {}
